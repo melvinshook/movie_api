@@ -9,8 +9,159 @@
     <title>Movie API</title>
     </head>
     <body>
-        This API is meant to be a movie database that will give you the description, genre and the directors of the movies. 
-    </body>
+       <p> This API is meant to be a movie database that will give you the description, genre and the directors of the movies. 
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Business Logic</th>
+              <th>URL</th>
+              <th>HTTP Method</th>
+              <th>Request body data format</th>
+              <th>Response body data format</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td>Return a list of All the movies</td>
+                <td>"/moives"</td>
+                <td>Get</td>
+                <td>None</td>
+                <td>A json object with all movies and their data</td>
+              </tr>
+
+                <tr>
+                  <td>Return movies by movie title</td>
+                  <td>"/movies/[title]"</td>
+                  <td>Get</td>
+                  <td>None</td>
+                  <td>A json object containing one movie based on a movie title</td>
+                </tr>
+
+                <tr>
+                  <td>Return data about movies based off genre</td>
+                  <td>"/movies/genre/[genreName]"</td>
+                  <td>Get</td>
+                  <td>None</td>
+                  <td>A json object with data about movies that match the searched genre</td>
+                </tr>
+
+                <tr>
+                  <td>Return a director by name</td>
+                  <td>"/movies/directors/[directorName]"</td>
+                  <td>Get</td>
+                  <td>None</td>
+                  <td>A json object with data about a director</td>
+                </tr>
+
+                <tr>
+                  <td>Create a new user</td>
+                  <td>"/users"</td>
+                  <td>Post</td>
+                  <td>A json object with data about a user to add, in this fromat:
+                    <code>
+                      {
+                        "Username": "Mel",
+                        "Password": "password"
+                      }
+                    </code>
+                  </td>
+                  <td>A json object with data about the user that was added with an ID:
+                    <code>
+                      {
+                        "Username": "Mel"
+                        "Password": "password"
+                        "id": []
+                        "FavoriteMovies": []
+                      }
+                    </code>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Allow users to update their info based off of their ID</td>
+                  <td>"/users/[id]</td>
+                  <td>PUT</td>
+                  <td>A json object with data about the user that needs to be updated, like:
+                    <code>
+                      {
+                        Username: Username
+                        Password: Password
+
+                      }
+                    </code>
+                  </td>
+                  <td>A json object with all the updated information</td>
+                </tr>
+
+                <tr>
+                  <td>Allow users to add movies to their favorites list</td>
+                  <td>"/users/[id]/[movietitle]"</td>
+                  <td>POST</td>
+                  <td>None</td>
+                  <td>A json object with updated data about favorite movies list</td>
+                </tr>
+
+                <tr>
+                  <td>Allow users to delete movies from their favorites list</td>
+                  <td>"users/[id]/[movietitle]</td>
+                  <td>DELETE</td>
+                  <td>None</td>
+                  <td>A json object with data about updated movie favorites list</td>
+                </tr>
+
+
+
+
+
+
+
+
+          </tbody>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        </table>
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+      
+      
+      </body>
+
 </html>
