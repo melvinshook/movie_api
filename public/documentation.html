@@ -32,7 +32,7 @@
 
                 <tr>
                   <td>Return movies by movie title</td>
-                  <td>"/movies/[title]"</td>
+                  <td>"/movies/:Title"</td>
                   <td>Get</td>
                   <td>Make sure to use "%20" for spaces in movie titles in URL</td>
                   <td>A json object containing one movie based on a movie title</td>
@@ -40,7 +40,7 @@
 
                 <tr>
                   <td>Return data about movies based off genre</td>
-                  <td>"/movies/genre/[genreName]"</td>
+                  <td>"/movies/genres/:genreName"</td>
                   <td>Get</td>
                   <td>None</td>
                   <td>A json object with data about movies that match the searched genre</td>
@@ -48,7 +48,7 @@
 
                 <tr>
                   <td>Return a director by name</td>
-                  <td>"/movies/directors/[directorName]"</td>
+                  <td>"/movies/directors/:directorName"</td>
                   <td>Get</td>
                   <td>ake sure to use "%20" for spaces in directors name in URL</td>
                   <td>A json object with data about a director</td>
@@ -62,7 +62,9 @@
                     <code>
                       {
                         "Username": "Mel",
-                        "Password": "password"
+                        "Password": "password",
+                        "Email": "mel@gmail.com",
+                        "Birthday": "Month/Day/Year"
                       }
                     </code>
                   </td>
@@ -79,14 +81,17 @@
                 </tr>
 
                 <tr>
-                  <td>Allow users to update their info based off of their ID</td>
-                  <td>"/users/[id]</td>
+                  <td>Allow users to update their info based off of their Username</td>
+                  <td>"/users/:Username</td>
                   <td>PUT</td>
                   <td>A json object with data about the user that needs to be updated, like:
                     <code>
                       {
                         Username: Username
                         Password: Password
+                        Email: Email
+                        Birthday: Birthday
+                        FavoriteMovies: FavoriteMovies
 
                       }
                     </code>
@@ -96,17 +101,17 @@
 
                 <tr>
                   <td>Allow users to add movies to their favorites list</td>
-                  <td>"/users/[id]/[movietitle]"</td>
+                  <td>"/users/:Username/movies/:MovieID"</td>
                   <td>POST</td>
-                  <td>None</td>
+                  <td>json object with movie ID to add to their favorites list</td>
                   <td>A json object with updated data about favorite movies list</td>
                 </tr>
 
                 <tr>
                   <td>Allow users to delete movies from their favorites list</td>
-                  <td>"users/[id]/[movietitle]</td>
+                  <td>"users/:Username/movies/:MovieID</td>
                   <td>DELETE</td>
-                  <td>None</td>
+                  <td>a json object with the movie ID you want removed from favorites list</td>
                   <td>A json object with data about updated movie favorites list</td>
                 </tr>
 
