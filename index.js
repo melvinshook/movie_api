@@ -1,57 +1,67 @@
-const express = require('express'),
-  morgan = require('morgan'),
-  app = express(),
-  bodyParser = require('body-parser'),
-  uuid = require('uuid');
+const express = require("express");
+const morgan = require("morgan");
+const app = express();
+app.use(express.json());
+const bodyParser = require("body-parser");
+const uuid = require("uuid");
+const mongoose = require("mongoose");
+const Models = require("./models.js");
+const Movies = Models.Movie;
+const Users = Models.User;
 
-app.use(bodyParser.json()), 
-app.use(morgan('common'));
+mongoose.connect("mongodb://localhost:27017/cfDB", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan("common"));
 
 let movies = [
   {
-    "Title": "Step Brothers",
-    "Description":
-    "Two aimless middle-aged losers still living at home are forced against their will to become roommates when their parents marry.",
+    Title: "Step Brothers",
+    Description:
+      "Two aimless middle-aged losers still living at home are forced against their will to become roommates when their parents marry.",
 
-    "Genre": {
-      "Name": "Comedy",
+    Genre: {
+      Name: "Comedy",
       "Year Made": "20008",
-  },
-    
-  "Director": {
-    "Name": "Adam McKay",
-    "Bio": "Adam McKay (born April 17, 1968) is an American screenwriter, director, comedian, and actor. McKay has a comedy partnership with Will Ferrell, with whom he co-wrote the films Anchorman, Talladega Nights, and The Other Guys. Ferrell and McKay also founded their comedy website Funny or Die through their production company Gary Sanchez Productions. He has been married to Shira Piven since 1999. They have two children.",
-  },
-},
+    },
 
-
-{
-    "Title": "Gone in 60 seconds",
-    "Description":
-      "A retired master car thief must come back to the industry and steal fifty cars with his crew in one night to save his brother's life.",
-    "Genre": {
-    "Name": "Action",
-    "Year Made": "2000"
+    Director: {
+      Name: "Adam McKay",
+      Bio: "Adam McKay (born April 17, 1968) is an American screenwriter, director, comedian, and actor. McKay has a comedy partnership with Will Ferrell, with whom he co-wrote the films Anchorman, Talladega Nights, and The Other Guys. Ferrell and McKay also founded their comedy website Funny or Die through their production company Gary Sanchez Productions. He has been married to Shira Piven since 1999. They have two children.",
+    },
   },
-  "Director": {
-    "Name": "Dominic Sena",
-    "Bio": "Dominic Sena was born on 26 April 1949 in Niles, Ohio, USA. He is a director and cinematographer, known for Kalifornia (1993), Whiteout (2009) and Swordfish (2001).",
-  },
-},
 
   {
-    "Title": "Blood Diamond",
-    "Description": "A fisherman, a smuggler, and a syndicate of businessmen match wits over the possession of a priceless diamond.",
-    "Genre": {
-      "Name": "Adventure",
-      "Year Made":"2006"
+    Title: "Gone in 60 seconds",
+    Description:
+      "A retired master car thief must come back to the industry and steal fifty cars with his crew in one night to save his brother's life.",
+    Genre: {
+      Name: "Action",
+      "Year Made": "2000",
     },
-  "Director": {
-    "Name": "Edward Zwick",
-    "Bio": "Zwick moves deftly between the roles of writer, director and producer. He was nominated for a Golden Globe for his direction of the 1989 critically acclaimed Civil War drama, Glory. He received his second Golden Globe nomination as a director for Legends of the Fall. Zwick received an Academy Award as one of the producers of Shakespeare in Love, as well as a second nomination for Traffic. He wrote, directed and produced the feature film The Last Samurai. Zwick continues to work with his partner, Marshall Herskovitz, at their company Bedford Falls where they created Thirtysomething, My So-Called Life, Once and Again and Blood Diamond." 
+    Director: {
+      Name: "Dominic Sena",
+      Bio: "Dominic Sena was born on 26 April 1949 in Niles, Ohio, USA. He is a director and cinematographer, known for Kalifornia (1993), Whiteout (2009) and Swordfish (2001).",
+    },
   },
-}
-  
+
+  {
+    Title: "Blood Diamond",
+    Description:
+      "A fisherman, a smuggler, and a syndicate of businessmen match wits over the possession of a priceless diamond.",
+    Genre: {
+      Name: "Adventure",
+      "Year Made": "2006",
+    },
+    Director: {
+      Name: "Edward Zwick",
+      Bio: "Zwick moves deftly between the roles of writer, director and producer. He was nominated for a Golden Globe for his direction of the 1989 critically acclaimed Civil War drama, Glory. He received his second Golden Globe nomination as a director for Legends of the Fall. Zwick received an Academy Award as one of the producers of Shakespeare in Love, as well as a second nomination for Traffic. He wrote, directed and produced the feature film The Last Samurai. Zwick continues to work with his partner, Marshall Herskovitz, at their company Bedford Falls where they created Thirtysomething, My So-Called Life, Once and Again and Blood Diamond.",
+    },
+  },
 ];
 
 let users = [
@@ -67,120 +77,190 @@ let users = [
   },
 ];
 
-// Create new user
-app.post('/users', (req, res) => {
-  const newUser = req.body;
+// Add a user in JSON format
+/* {
+  id: integer,
+  userName: string,
+  password: string,
+  email: string,
+  birthday: date,
+}*/
 
-  if (newUser.name) {
-    newUser.id = uuid.v4();
-    users.push(newUser);
-    res.status(201).json(newUser);
-  } else {
-    res.status(400).send("users need names");
-  }
-})
+app.post("/users", async (req, res) => {
+  await Users.findOne({ Username: req.body.Username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + "already exists");
+      } else {
+        Users.create({
+          Username: req.body.Username,
+          Password: req.body.Password,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday,
+        })
+          .then((user) => {
+            res.status(201).json(user);
+          })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send("Error: " + error);
+          });
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("Error: " + error);
+    });
+});
 
-// Update users info by ID
-app.put('/users/:id', (req, res) => {
-  const { id } = req.params;
-  const updatedUser = req.body;
+// Get all users json
 
-  let user = users.find( user => user.id == id) ;
+app.get("/users", async (req, res) => {
+  await Users.find()
+    .then((users) => {
+      res.status(201).json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-  if (user) {
-    user.name = updatedUser.name;
-    res.status(200).json(user);
-  } else {
-    res.status(400).send("no such user")
-  }
-})
+// Get user by username json
 
-// Create add movies to favorites list by id
-app.post('/users/:id/:movieTitle', (req, res) => {
-  const { id, movieTitle } = req.params;
+app.get("/users/:Username", async (req, res) => {
+  await Users.findOne({ Username: req.params.Username })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-  let user = users.find( user => user.id == id );
+//Update a user's info by username
 
-  if (user) {
-    user.favoriteMovies.push(movieTitle);
-    res.status(200).send(`${movieTitle} has been added to user ${id}'s array `);
-  } else {
-    res.status(400).send("no such user")
-  }
-})
+app.put("/users/:Username", async (req, res) => {
+  await Users.findOneAndUpdate(
+    { Username: req.params.Username },
+    {
+      $set: {
+        Username: req.body.Username,
+        Password: req.body.Password,
+        Email: req.body.Email,
+        Birthday: req.body.Birthday,
+      },
+    },
+    { new: true }
+  ) // this line makes sure updated document is returned
+    .then((updatedUser) => {
+      res.json(updatedUser);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-// Delete movies from favorites list by id
-app.delete('/users/:id/:movieTitle', (req, res) => {
-  const { id, movieTitle } = req.params;
+// Add a movie to user's favorite list json
 
-  let user = users.find((user) => user.id == id);
+app.post("/users/:Username/movies/:MovieID", async (req, res) => {
+  await Users.findOneAndUpdate(
+    { Username: req.params.Username },
+    { $push: { favoriteMovies: req.params.MovieIDovieId } },
+    { new: true }
+  ) //this line makes sure updated document is returned
+    .then((updatedUser) => {
+      res.json(updatedUser);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-  if (user) {
-    user.favoriteMovies = user.favoriteMovies.filter( title => title !== movieTitle );
-    res
-      .status(200)
-      .send(`${movieTitle} has been removed from user ${id}'s array`);
-  } else {
-    res.status(400).send("no such user")
-  }
-})
+// Delete a user by username json
+app.delete("/users/:Username", async (req, res) => {
+  await Users.findOneAndDelete({ Username: req.params.Username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.Username + " was not found");
+      } else {
+        res.status(200).send(req.params.Username + " was deleted.");
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-// Delete allow users to deregister
-app.delete('/users/:id', (req, res) => {
-  const { id } = req.params;
+// delete movie from favorites
+app.delete("/users/:Username/movies/:MovieID", async (req, res) => {
+  await Users.findOneAndUpdate(
+    { Username: req.params.Username },
+    { $pull: { FavoriteMovies: req.params.MovieID } },
+    { new: true }
+  )
+    .then((updatedUser) => {
+      res.json(updatedUser);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-  let user = users.find((user) => user.id == id);
+// Read All movies json
+app.get("/movies", async (req, res) => {
+  await Movies.find()
+    .then((movies) => {
+      res.status(201).json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-  if (user) {
-    users = users.filter( user => user.id != id );
-    res.status(200).send(`user ${id} has been removed`);
-  } else {
-    res.status(400).send("no such user")
-  }
-})
+// Read movies by title json
+app.get('/movies/:title', async (req, res) => {
+  await Movies.findOne({ Title: req.params.title })
+    .then((movie) => {
+      res.status(200).json(movie);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error:" + err);
+    });
+});
 
-// Read All movies
-app.get('/movies', (req, res) => {
-  res.status(200).json(movies);
-})
+//searches for movies by their genre and returns a JSON object
+app.get('/movies/genres/:genreName', async (req, res) => {
+  await Movies.find({ 'Genre.Name': req.params.genreName })
+  .then((movie) => {
+    res.status(200).json(movie.Genre);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  });
+});
 
-// Read movies by title
-app.get('/movies/:title', (req, res) => {
-  const { title } = req.params;
-  const movie = movies.find( movie => movie.Title === title) ;
+// Read director by name json
+app.get('/movies/directors/:directorName', async (req, res) => {
+  await Movies.findOne({ 'Director.Name': req.params.directorName })
+  .then((movie) => {
+    res.status(200).json(movie.Directorirector);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  });
+});
 
-  if (movie) {
-    res.status(200).json(movie);
-  } else {
-    res.status(400).send("no such movie")
-  }
-})
-
-// Read movies by genre
-app.get('/movies/genre/:genreName', (req, res) => {
-  const { genreName } = req.params;
-  const genre = movies.find( movie => movie.Genre.Name === genreName).Genre;
-
-  if (genre) {
-    res.status(200).json(genre);
-  } else {
-    res.status(400).send("no such genre")
-  }
-})
-
-// Read directors by name
-app.get('/movies/directors/:directorName', (req, res) => {
-  const { directorName } = req.params;
-  const director = movies.find( movie => movie.Director.Name === directorName).Director;
-
-  if (director) {
-    res.status(200).json(director);
-  } else {
-    res.status(400).send("no such director")
-  }
-})
-
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.send("Welcome to my Movie app");
 });
 
