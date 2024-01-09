@@ -1,26 +1,26 @@
-const express = require("express");
-const morgan = require("morgan");
+const express = require('express');
+const morgan = require('morgan');
 const app = express();
 app.use(express.json());
-const bodyParser = require("body-parser");
-const uuid = require("uuid");
-const mongoose = require("mongoose");
-const Models = require("./models.js");
+app.use(express.urlencoded({ extended: true }));
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true}));
+const uuid = require('uuid');
+const mongoose = require('mongoose');
+const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
-
-mongoose.connect("mongodb://localhost:27017/cfDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
 let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
-app.use(morgan("common"));
 
+
+mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
+
+app.use(bodyParser.json());
+
+
+app.use(morgan("common"));
 
 let movies = [
   {
@@ -119,174 +119,171 @@ app.post("/users", async (req, res) => {
 
 // Get all users json
 
-app.get("/users", passport.authenticate('jwt', { session: false}), async (req, res) => {
-  await Users.find()
-    .then((users) => {
-      res.status(201).json(users);
-      console.log(users);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/users", passport.authenticate('jwt', { session: false }), async (req, res) => {
+    await Users.find()
+      .then((users) => {
+        res.status(201).json(users);
+        console.log(users);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 // Get user by username json
 
-app.get("/users/:Username", passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Users.findOne({ Username: req.params.Username })
-    .then((user) => {
-      res.json(user);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/users/:Username", passport.authenticate('jwt', { session: false }), async (req, res) => {
+    await Users.findOne({ Username: req.params.Username })
+      .then((user) => {
+        res.json(user);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 //Update a user's info by username
 
-app.put('/users/:Username', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  // Condition to check added here
-  if(req.user.USername !== req.params.Username) {
-    return res.status(400).send('Permission denied');
-  }
-  //Condtion Ends
-  await Users.findOneAndUpdate(
-    { Username: req.params.Username },
-    {
-      $set: {
-        Username: req.body.Username,
-        Password: req.body.Password,
-        Email: req.body.Email,
-        Birthday: req.body.Birthday,
+app.put(
+  "/users/:Username", passport.authenticate('jwt', { session: false }), async (req, res) => {
+    // Condition to check added here
+    if (req.user.USername !== req.params.Username) {
+      return res.status(400).send("Permission denied");
+    }
+    //Condtion Ends
+    await Users.findOneAndUpdate(
+      { Username: req.params.Username },
+      {
+        $set: {
+          Username: req.body.Username,
+          Password: req.body.Password,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday,
+        },
       },
-    },
-    { new: true }
-  ) // this line makes sure updated document is returned
-    .then((updatedUser) => {
-      res.json(updatedUser);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+      { new: true }
+    ) // this line makes sure updated document is returned
+      .then((updatedUser) => {
+        res.json(updatedUser);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 // Add a movie to user's favorite list json
 
-app.post("/users/:Username/movies/:MovieID", passport.authenticate('jwt', { session: false}), async (req, res) => {
-  await Users.findOneAndUpdate(
-    { Username: req.params.Username },
-    { $push: { favoriteMovies: req.params.MovieIDovieId } },
-    { new: true }
-  ) //this line makes sure updated document is returned
-    .then((updatedUser) => {
-      res.json(updatedUser);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.post(
+  "/users/:Username/movies/:MovieID", passport.authenticate('jwt', { session: false }), async (req, res) => {
+    await Users.findOneAndUpdate(
+      { Username: req.params.Username },
+      { $push: { favoriteMovies: req.params.MovieID } },
+      { new: true }
+    ) //this line makes sure updated document is returned
+      .then((updatedUser) => {
+        res.json(updatedUser);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 // Delete a user by username json
-app.delete("/users/:Username", passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Users.findOneAndDelete({ Username: req.params.Username })
-    .then((user) => {
-      if (!user) {
-        res.status(400).send(req.params.Username + " was not found");
-      } else {
-        res.status(200).send(req.params.Username + " was deleted.");
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.delete(
+  "/users/:Username", passport.authenticate('jwt', { session: false }), async (req, res) => {
+    await Users.findOneAndDelete({ Username: req.params.Username })
+      .then((user) => {
+        if (!user) {
+          res.status(400).send(req.params.Username + " was not found");
+        } else {
+          res.status(200).send(req.params.Username + " was deleted.");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 // delete movie from favorites
-app.delete("/users/:Username/movies/:MovieID", passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Users.findOneAndUpdate(
-    { Username: req.params.Username },
-    { $pull: { FavoriteMovies: req.params.MovieID } },
-    { new: true }
-  )
-    .then((updatedUser) => {
-      res.json(updatedUser);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.delete(
+  "/users/:Username/movies/:MovieID", passport.authenticate('jwt', { session: false }), async (req, res) => {
+    await Users.findOneAndUpdate(
+      { Username: req.params.Username },
+      { $pull: { favoriteMovies: req.params.MovieID } },
+      { new: true }
+    )
+      .then((updatedUser) => {
+        res.json(updatedUser);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 // Read All movies json
-app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Movies.find()
-    .then((movies) => {
-      console.log(movies);
-      res.status(201).json(movies);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  '/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    await Movies.find()
+      .then((movies) => {
+        console.log(movies);
+        res.status(201).json(movies);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      });
+  }
+);
 
 // Read movies by title json
 app.get('/movies/:Title', passport.authenticate('jwt', { session: false }), async (req, res) => {
   await Movies.findOne({ Title: req.params.Title })
-    .then((movie) => {
-      res.status(200).json(movie);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error:" + err);
-    });
+  .then((movie) => {
+    res.json(movie);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send("Error " + err);
+  });
 });
 
 //searches for movies by their genre and returns a JSON object
 app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Movies.find({ 'Genre.Name': req.params.genreName })
+  await Movies.find({ 'genre.name': req.params.genreName})
   .then((movie) => {
-    res.status(200).json(movie.Genre);
+    res.json(movie.Genre);
   })
-  .catch((err) => {
+  .cacth((err) => {
     console.error(err);
-    res.status(500).send('Error: ' + err);
+    res.status(500).send('Error ' + err);
   });
 });
-
-// Read all directors
-app.get('movies/directors', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Movies.find({ Director: req.params.director })
-  .then((movie) => {
-    console.log(movie.Director);
-    res.status(200).json(movie.Director);
-  })
-  .catch((err) => {
-    console.log(err);
-    res.status(500).send('Error: ' + err);
-  });
-});
-
-
-
-
 
 // Read director by name json
-app.get('/movies/directors/:directorName', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Movies.findOne({ 'Director.Name': req.params.directorName })
-  .then((movie) => {
-    res.status(200).json(movie.Director);
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).send('Error: ' + err);
+app.get('movies/director/:directorName', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    await Movies.findOne({ 'Director.Name': req.params.directorName })
+      .then((movie) => {
+        res.status(200).json(movie.Director);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
   });
-});
 
 app.get("/", (req, res) => {
   res.send("Welcome to my Movie app");
