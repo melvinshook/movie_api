@@ -10,9 +10,14 @@ const mongoose = require('mongoose');
 const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
+const cors = require('cors');
+app.use(cors());
 let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
+const { check, validationResult } = require('express-validator');
+
+
 
 
 mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
@@ -90,7 +95,25 @@ let users = [
   birthday: date,
 }*/
 
-app.post("/users", async (req, res) => {
+app.post("/users", 
+// Validation logic here for request
+//you can either use a chain of methods like .not().isEmpty()
+//which means "opposite of isEmpty" in plain english "is not empty"
+// or use .isLength({min: 5}) which means minimum value of 5 characters are only allowed
+[
+  check('Username', 'Username is require').isLength({min: 5}),
+  check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('Passowrd', 'Password is required').not().isEmpty(),
+  check('Email', 'Email does not appear to be valid').isEmail()
+], async (req, res) => {
+
+  // check the validation object for errors
+  let errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+  let hashedPassword = Users.hashPassword(req.body.Password);
   await Users.findOne({ Username: req.body.Username })
     .then((user) => {
       if (user) {
@@ -98,7 +121,7 @@ app.post("/users", async (req, res) => {
       } else {
         Users.create({
           Username: req.body.Username,
-          Password: req.body.Password,
+          Password: hashedPassword,
           Email: req.body.Email,
           Birthday: req.body.Birthday,
         })
@@ -263,7 +286,7 @@ app.get('/movies/:Title', passport.authenticate('jwt', { session: false }), asyn
 
 //searches for movies by their genre and returns a JSON object
 app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Movies.find({ 'genre.name': req.params.genreName})
+  await Movies.findOne({ 'genre.name': req.params.genreName})
   .then((movie) => {
     res.json(movie.Genre);
   })
@@ -296,6 +319,8 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something went wrong!");
 });
 
-app.listen(5501, () => {
-  console.log("This app is running on port 5501");
+const port = process.env.PORT || 5501;
+app.listen(port, '0.0.0.0',() => {
+ console.log('Listening on Port ' + port);
 });
+
