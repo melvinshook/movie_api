@@ -146,9 +146,13 @@ app.get("/users/:userName", async (req, res) => {
 
 //Update a user's info by username
 
-app.put("/users/:userName", async (req, res) => {
-  await Users.findOneAndUpdate(
-    { userName: req.params.userName },
+app.put('/users/:userName', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  // CONDITION TO CHECK ADDED HERE
+    if(req.user.userName !== req.params.userName){
+      return res.status(400).send('Permission was denied');
+    }
+    // CONDITION ENDS
+  await Users.findOneAndUpdate({ userName: req.params.userName },
     {
       $set: {
         userName: req.body.userName,
