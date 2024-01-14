@@ -9,13 +9,23 @@ const Models = require("./models.js");
 const Movies = Models.Movie;
 const Users = Models.User;
 
-mongoose.connect("mongodb://localhost:27017/cfDB", {
+const { check, validationResult } = require('express-validator');
+
+/*mongoose.connect("mongodb://localhost:27017/cfDB", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}); */
+
+mongoose.connect( process.env.CONNECTION_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
+
+const cors = require('cors');
+app.use(cors());
 
 let auth = require('./auth')(app);
 const passport = require('passport');
@@ -91,7 +101,25 @@ let users = [
   birthday: date,
 }*/
 
-app.post("/users", async (req, res) => {
+app.post("/users",
+ // Validation logic here for request
+  //you can either use a chain of methods like .not().isEmpty()
+  //which means "opposite of isEmpty" in plain english "is not empty"
+  //or use .isLength({min: 5}) which means
+  //minimum value of 5 characters are only allowed
+  [
+    check('userName', 'userName is required').isLength({min: 5}),
+    check('userName', 'userName contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('password', 'password is required').not().isEmpty(),
+    check('email', 'email does not appear to be valid').isEmail()
+  ], async (req, res) => {
+    // check the validation object for errors
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+  let hashedPassword = Users.hashPassword(req.body.password);
   await Users.findOne({ userName: req.body.userName })
     .then((user) => {
       if (user) {
@@ -273,9 +301,9 @@ app.get("/", (req, res) => {
   res.send("Welcome to my Movie app");
 });
 
-
-app.listen(5501, () => {
-  console.log('This app is running on port 5501');
+const port = process.env.PORT || 5501;
+app.listen(port, '0.0.0.0', () => {
+  console.log('Listening on Port' + port);
 });
 
 
