@@ -16,7 +16,7 @@ const { check, validationResult } = require('express-validator');
   useUnifiedTopology: true,
 }); */
 
- mongoose.connect( process.env.CONNECTION_URI, {
+mongoose.connect( process.env.CONNECTION_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }); 
@@ -119,15 +119,16 @@ app.post("/users",
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-  let hashedPassword = Users.hashPassword(req.body.password);
-  await Users.findOne({ userName: req.body.userName })
+  let hashedPassword = await Users.hashPassword(req.body.password);
+  await Users.findOne({ userName: req.body.userName }) // see if username aleady exists
     .then((user) => {
       if (user) {
+        // if user is found, send response 
         return res.status(400).send(req.body.userName + "already exists");
       } else {
         Users.create({
           userName: req.body.userName,
-          password: req.body.password,
+          password: hashedPassword,
           email: req.body.email,
           birthday: req.body.birthday,
         })
