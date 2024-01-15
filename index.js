@@ -11,15 +11,15 @@ const Users = Models.User;
 
 const { check, validationResult } = require('express-validator');
 
-/*mongoose.connect("mongodb://localhost:27017/cfDB", {
+/* mongoose.connect("mongodb://localhost:27017/cfDB", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }); */
 
-mongoose.connect( process.env.CONNECTION_URI, {
+ mongoose.connect( process.env.CONNECTION_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
+}); 
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
@@ -301,7 +301,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to my Movie app");
 });
 
-const port = process.env.PORT || 5501;
+const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
   console.log('Listening on Port' + port);
 });
