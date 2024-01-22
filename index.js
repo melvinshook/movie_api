@@ -119,7 +119,8 @@ app.post("/users",
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-  let hashedPassword = await Users.hashPassword(req.body.password);
+    
+    let hashedPassword = await Users.hashPassword(req.body.password);
   await Users.findOne({ userName: req.body.userName }) // see if username aleady exists
     .then((user) => {
       if (user) {
@@ -185,7 +186,7 @@ app.put('/users/:userName', passport.authenticate('jwt', { session: false }), as
     {
       $set: {
         userName: req.body.userName,
-        password: req.body.password,
+        password: hashedPassword,
         email: req.body.email,
         birthday: req.body.birthday,
       },
