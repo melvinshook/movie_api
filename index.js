@@ -40,7 +40,7 @@ let movies = [
 
     Genre: {
       Name: "Comedy",
-      "Year Made": "20008",
+      "Year Made": "2008",
     },
 
     Director: {
@@ -107,7 +107,7 @@ app.post("/users",
   //or use .isLength({min: 5}) which means
   //minimum value of 5 characters are only allowed
   [
-    check('userName', 'userName is required').isLength({min: 5}),
+    check('userName', 'userName needs to be a min of 5 characters').isLength({min: 5}),
     check('userName', 'userName contains non alphanumeric characters - not allowed.').isAlphanumeric(),
     check('password', 'password is required').not().isEmpty(),
     check('email', 'email does not appear to be valid').isEmail()
@@ -181,6 +181,7 @@ app.put('/users/:userName', passport.authenticate('jwt', { session: false }), as
       return res.status(400).send('Permission was denied');
     }
     // CONDITION ENDS
+    let hashedPassword = await Users.hashPassword(req.body.password);
   await Users.findOneAndUpdate({ userName: req.params.userName },
     {
       $set: {
