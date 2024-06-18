@@ -192,6 +192,17 @@ app.get(
 
 app.put(
   "/users/:userName",
+  [
+    check("userName", "userName needs to be a min of 5 characters").isLength({
+      min: 5,
+    }),
+    check(
+      "userName",
+      "userName contains non alphanumeric characters - not allowed."
+    ).isAlphanumeric(),
+    check("password", "password is required").not().isEmpty(),
+    check("email", "email does not appear to be valid").isEmail(),
+  ],
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     // CONDITION TO CHECK ADDED HERE
