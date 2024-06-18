@@ -211,6 +211,7 @@ app.put(
     }
     // CONDITION ENDS
     let hashedPassword = await Users.hashPassword(req.body.password);
+    console.log({ params: req.params, body: req.body });
     await Users.findOneAndUpdate(
       { userName: req.params.userName },
       {
@@ -224,6 +225,7 @@ app.put(
       { new: true }
     ) // this line makes sure updated document is returned
       .then((updatedUser) => {
+        console.log({ updatedUser });
         res.json(updatedUser);
       })
       .catch((err) => {
