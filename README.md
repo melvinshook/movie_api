@@ -1,8 +1,8 @@
-## Movie-API "myFlix"
+# Movie-API "myFlix"
 
 ● The goal of this project was to build the server-side component of a "movies" web app. This was built using JavaScript, Node.js, Express and MongoDB.
 
-# Features
+## Features
 
 ● Return a list of ALL movies to the user
 ● Return data (description, genre, director, image URL, whether it’s featured or not) about a
