@@ -1,7 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
-app.use(express.json());
 const bodyParser = require("body-parser");
 const uuid = require("uuid");
 const mongoose = require("mongoose");
@@ -24,7 +23,7 @@ mongoose.connect(db, {
   useUnifiedTopology: true,
 });
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const cors = require("cors");
