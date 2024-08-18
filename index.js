@@ -1,13 +1,14 @@
-const express = require("express");
-const morgan = require("morgan");
-const app = express();
-const bodyParser = require("body-parser");
-const uuid = require("uuid");
-const mongoose = require("mongoose");
-const Models = require("./models.js");
+import express from "express";
+import morgan from "morgan";
+import app from express();
+import uuid from "uuid";
+import mongoose from "mongoose";
+import Models from "./models.js";
+import dotenv from "dotenv";
+
+
 const Movies = Models.Movie;
 const Users = Models.User;
-const dotenv = require("dotenv");
 
 dotenv.config().parsed;
 const { check, validationResult } = require("express-validator");
