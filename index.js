@@ -15,14 +15,14 @@ dotenv.config();
 const { check, validationResult } = await import("express-validator");
 const db = process.env.URI;
 
-/* mongoose.connect(db, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}); */
-mongoose.connect("mongodb://localhost:27017/myFlixDB", {
+mongoose.connect(db, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+/* mongoose.connect("mongodb://localhost:27017/myFlixDB", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}); */
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
