@@ -1,26 +1,5 @@
 import express from "express";
-<<<<<<< HEAD
-const morgan = require("morgan");
-const app = express();
-app.use(express.json());
-const bodyParser = require("body-parser");
-const uuid = require("uuid");
-const mongoose = require("mongoose");
-const Models = require("./models.js");
-const Movies = Models.Movie;
-const Users = Models.User;
-const dotenv = require("dotenv");
 
-dotenv.config();
-const { check, validationResult } = require("express-validator");
-const db = process.env.URI;
-
-mongoose.connect("mongodb://localhost:27017/cfDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-/* mongoose.connect(process.env.CONNECTION_URI, {
-=======
 import morgan from "morgan";
 import { v4 as uuidv4 } from "uuid";
 import mongoose from "mongoose";
