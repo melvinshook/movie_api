@@ -1,4 +1,4 @@
-const express = require("express");
+import express from "express";
 const morgan = require("morgan");
 const app = express();
 app.use(express.json());
@@ -14,14 +14,14 @@ dotenv.config();
 const { check, validationResult } = require("express-validator");
 const db = process.env.URI;
 
-/* mongoose.connect("mongodb://localhost:27017/cfDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}); */
-mongoose.connect(process.env.CONNECTION_URI, {
+mongoose.connect("mongodb://localhost:27017/cfDB", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+/* mongoose.connect(process.env.CONNECTION_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}); */
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
