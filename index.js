@@ -2,11 +2,11 @@ import express from "express";
 import morgan from "morgan";
 import { v4 as uuidv4 } from "uuid";
 import mongoose from "mongoose";
-import { Movie, User } from './models.js';
+import { Movie, User } from "./models.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import passport from "passport";
-import {login} from './auth.js'
+import { login } from "./auth.js";
 import "./passport.js";
 
 const app = express();
@@ -15,7 +15,11 @@ dotenv.config();
 const { check, validationResult } = await import("express-validator");
 const db = process.env.URI;
 
-mongoose.connect(db, {
+/* mongoose.connect(db, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}); */
+mongoose.connect("mongodb://localhost:27017/myFlixDB", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
