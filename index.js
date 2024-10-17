@@ -3,12 +3,15 @@ import express from "express";
 import morgan from "morgan";
 import { v4 as uuidv4 } from "uuid";
 import mongoose from "mongoose";
-import { Movie, User } from "./models.js";
+
 import dotenv from "dotenv";
 import cors from "cors";
 import passport from "passport";
 import { login } from "./auth.js";
 import "./passport.js";
+const Models = require("./models.js");
+const Users = Models.User;
+const Movies = Models.Movie;
 
 const app = express();
 
