@@ -10,8 +10,9 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 const { check, validationResult } = require("express-validator");
-require("dotenv").config();
-const uri = process.env.MONGODB_URI;
+
+const uri =
+  "mongodb+srv://melvinshook1221:Hazel2527196@myflixdb.qbtadqa.mongodb.net/?retryWrites=true&w=majority&appName=myFlixDB";
 
 /* mongoose.connect("mongodb://localhost:27017/cfDB", {
   useNewUrlParser: true,
