@@ -10,6 +10,8 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 const { check, validationResult } = require("express-validator");
+require("dotenv").config();
+const uri = process.env.MONGODB_URI;
 
 /* mongoose.connect("mongodb://localhost:27017/cfDB", {
   useNewUrlParser: true,
