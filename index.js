@@ -25,8 +25,28 @@ mongoose.connect(process.env.CONNECTION_URI, {
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
+// import and set up cors
 const cors = require("cors");
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:8080", // Local development
+  "http://careerfoundry-website-1-6.s3.us-east-2.amazonaws.com/welcome", // S3 static website
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, CURL, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg =
+          "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+    credentials: true, // Include cookies in requests
+  })
+);
 
 let auth = require("./auth")(app);
 const passport = require("passport");
