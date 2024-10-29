@@ -374,6 +374,20 @@ app.get("/", (req, res) => {
 });
 
 const port = process.env.PORT || 8080;
-app.listen(port, "0.0.0.0", () => {
+/* app.listen(port, "0.0.0.0", () => {
   console.log("Listening on Port" + port);
-});
+}); */
+
+// START SERVER
+
+mongoose
+  .connect(process.env.CONNECTION_URI)
+  .then(() => {
+    console.log("Connected to MongoDB");
+    app.listen(port, "0.0.0.0", () => {
+      console.log("Server running on Port " + port);
+    });
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:", err);
+  });
