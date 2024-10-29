@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 const cors = require("cors");
 const allowedOrigins = [
   "http://localhost:8080", // Local development
-  "http://careerfoundry-website-1-6.s3-website.us-east-2.amazonaws.com", // S3 static website
+  "http://myflixclientbucket.s3-website.us-east-2.amazonaws.com", // S3 static website
 ];
 
 app.use(
