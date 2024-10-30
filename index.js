@@ -17,10 +17,10 @@ require("dotenv").config();
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }); */
-/* mongoose.connect(process.env.CONNECTION_URI, {
+mongoose.connect(process.env.CONNECTION_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-}); */
+});
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
@@ -374,13 +374,13 @@ app.get("/", (req, res) => {
 });
 
 const port = process.env.PORT || 8080;
-/* app.listen(port, "0.0.0.0", () => {
+app.listen(port, "0.0.0.0", () => {
   console.log("Listening on Port" + port);
-}); */
+});
 
 // START SERVER
 
-mongoose
+/* mongoose
   .connect(process.env.CONNECTION_URI)
   .then(() => {
     console.log("Connected to MongoDB");
@@ -390,4 +390,4 @@ mongoose
   })
   .catch((err) => {
     console.error("Error connecting to MongoDB:", err);
-  });
+  }); */
