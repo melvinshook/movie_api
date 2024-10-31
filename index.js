@@ -17,10 +17,19 @@ require("dotenv").config();
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }); */
-mongoose.connect(process.env.CONNECTION_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose
+  .connect(process.env.CONNECTION_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("MongoDB connection successful");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    console.error("Connection URI:", process.env.CONNECTION_URI);
+    process.exit(1);
+  });
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,7 +40,7 @@ const allowedOrigins = [
   "http://localhost:8080", // Local development
   "http://myflixclientbucket.s3-website.us-east-2.amazonaws.com", // S3 static website
   "http://15.0.0.94", // ec2 private IP
-  "http://3.134.90.189", // ec2 public ip
+  "http://3.14.83.113", // ec2 public ip
 ];
 
 app.use(
