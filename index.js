@@ -30,6 +30,8 @@ const cors = require("cors");
 const allowedOrigins = [
   "http://localhost:8080", // Local development
   "http://myflixclientbucket.s3-website.us-east-2.amazonaws.com", // S3 static website
+  "http://15.0.0.94", // ec2 private IP
+  "http://3.134.90.189", // ec2 public ip
 ];
 
 app.use(
